@@ -31,7 +31,7 @@ public class Flags {
   public static final String DEFAULT_MORPHO_RANGE = "pos,posclass,lemma";
   public static final String DEFAULT_MFS_RANGE = "pos,posclass,lemma,mfs,no";
   public static final String DEFAULT_SUPERSENSE_RANGE = "mfs,monosemic";
-  
+
   /**
    * Default beam size for decoding.
    */

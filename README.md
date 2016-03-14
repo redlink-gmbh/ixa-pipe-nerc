@@ -4,7 +4,7 @@ ixa-pipe-nerc
 
 ixa-pipe-nerc is a multilingual Sequence Labeler for tasks such as Named Entity
 Recognition (NERC), Opinion Target Extraction (OTE) and SuperSense Tagging (SST).
-**Current version is 1.5.3**
+**Current version is 1.5.4**
 
 ixa-pipe-nerc is part of IXA pipes, a multilingual set of NLP tools developed
 by the IXA NLP Group [http://ixa2.si.ehu.es/ixa-pipes].
@@ -30,6 +30,7 @@ for easy access to its API.
 2. [Usage of ixa-pipe-nerc](#cli-usage)
   + [NERC tagging](#tagging)
   + [Opinion Target Extraction (OTE)](#ote)
+  + [Server mode](#server)
   + [Training your own models](#training)
   + [Evaluation](#evaluation)
 3. [API via Maven Dependency](#api)
@@ -40,8 +41,9 @@ for easy access to its API.
 ixa-pipe-nerc provides:
 
 + **NERC** for Basque, English, Spanish, Dutch, German and Italian. The named entity types are based on:
-   + **CONLL**: LOCATION, MISC, ORGANIZATION and PERSON. See [CoNLL 2002](http://www.clips.ua.ac.be/conll2002/ner/)
-   and [CoNLL 2003](http://www.clips.ua.ac.be/conll2003/ner/) for more information.
+   + **CONLL**: LOCATION, MISC, ORGANIZATION and PERSON. See [CoNLL 2002](http://www.clips.ua.ac.be/conll2002/ner/) and [CoNLL 2003](http://www.clips.ua.ac.be/conll2003/ner/) for more information.
+   + **SONAR-1**: for Dutch, six main types, including CoNLL types plus PRODUCT and EVENT.
+   + **Ancora**: for Spanish, six main types, including CoNLL types plus DATE and NUMBER.
 + **Opinion Target Extraction** (OTE) for English. The models are trained on the SemEval 2014 and 2015 datasets;
   **ixa-pipe-nerc was the best system** in [SemEval 2015 OTE subtask within task 12](http://alt.qcri.org/semeval2015/task12/).
 + **SuperSense Tagging** (SST) for English. The models are trained on Semcor.
@@ -74,11 +76,9 @@ with the [conlleval script](http://www.cnts.ua.ac.be/conll2002/ner/bin/conlleval
 
 **NERC models**:
 
-  + **Release 1.5.0** [685MB]: [nerc-models-latest.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/nerc-models-1.5.0.tgz)
-  + Release 1.4.0 [400MB+]: [nerc-models-1.4.0.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/nerc-models-1.4.0.tgz)
-  + Releases 1.3.3-1.3.6: [nerc-models-1.3.+.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/nerc-models-1.3.3.tgz)
+  + **Release 1.5.4** [685MB]: [nerc-models-latest.tgz](http://ixa2.si.ehu.es/ixa-pipes/models/nerc-models-1.5.4.tgz)
 
-Every models is trained with the averaged Perceptron algorithm as described in (Collins 2002) and as implemented
+Every model is trained with the averaged Perceptron algorithm as described in (Collins 2002) and as implemented
 in Apache OpenNLP.
 
 + **Basque**: eu-clusters model, trained on egunkaria dataset, F1 76.72 on 3 class evaluation and F1 75.40 on 4 classes.
@@ -123,7 +123,9 @@ in Apache OpenNLP.
 
 ixa-pipe-nerc provides the following command-line basic functionalities:
 
-1. **tag**: reads a NAF document containing *wf* and *term* elements and tags named
+1. **server**: starts a TCP service loading the model and required resources.
+2. **client**: sends a NAF document to a running TCP server.
+2. **tag**: reads a NAF document containing *wf* and *term* elements and tags named
    entities.
 2. **ote**: reads a NAF document containing *wf* and *term* elements and performs
    opinion target extraction (OTE).
@@ -132,7 +134,7 @@ ixa-pipe-nerc provides the following command-line basic functionalities:
 4. **eval**: evaluates a trained model with a given test set.
 5. **cross**: it performs cross validation on a corpus.
 
-Each of these functionalities are accessible by adding (tag|ote|train|eval|cross) as a
+Each of these functionalities are accessible by adding (server|client|tag|ote|train|eval|cross) as a
 subcommand to ixa-pipe-nerc-$version.jar. Please read below and check the -help
 parameter:
 
@@ -213,6 +215,19 @@ There are several options to tag with ixa-pipe-nerc:
 cat file.txt | ixa-pipe-tok | ixa-pipe-pos | java -jar $PATH/target/ixa-pipe-nerc-$version.jar ote -m ote-models-$version/en/ote-semeval2014-restaurants.bin
 ````
 
+### Server
+
+We can start the TCP server as follows:
+
+````shell
+java -jar target/ixa-pipe-nerc-$version.jar server -l en --port 2060 -m en-91-18-conll03.bin
+````
+Once the server is running we can send NAF documents containing (at least) the term layer like this:
+
+````shell
+ cat file.pos.naf | java -jar target/ixa-pipe-nerc-$version.jar client -p 2060
+````
+
 ### Training
 
 To train a new model for NERC, OTE or SST, you just need to pass a training parameters file as an
@@ -261,7 +276,7 @@ this dependency to your pom.xml:
 <dependency>
     <groupId>eus.ixa</groupId>
     <artifactId>ixa-pipe-nerc</artifactId>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
 </dependency>
 ````
 
