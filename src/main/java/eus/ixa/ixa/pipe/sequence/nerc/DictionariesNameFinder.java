@@ -20,15 +20,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import eus.ixa.ixa.pipe.sequence.Name;
-import eus.ixa.ixa.pipe.sequence.NameFactory;
-import eus.ixa.ixa.pipe.sequence.NameFinder;
-import eus.ixa.ixa.pipe.sequence.StatisticalNameFinder;
-import eus.ixa.ixa.pipe.sequence.StringUtils;
-import eus.ixa.ixa.pipe.sequence.dict.Dictionaries;
-
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.util.Span;
+import eus.ixa.ixa.pipe.sequence.Sequence;
+import eus.ixa.ixa.pipe.sequence.SequenceFactory;
+import eus.ixa.ixa.pipe.sequence.StatisticalSequenceLabeler;
+import eus.ixa.ixa.pipe.sequence.StringUtils;
+import eus.ixa.ixa.pipe.sequence.dict.Dictionaries;
 
 /**
  * Named Entity Recognition module based on {@link Dictionaries} objects This
@@ -40,8 +38,8 @@ import opennlp.tools.util.Span;
  * Dictionary based features in the training package.
  * <li>tag: Provided a Dictionaries it tags only the names it matches against it
  * <li>post: This function checks for names in the Dictionary that have not been
- * detected by a {@link StatisticalNameFinder}; it also corrects the Name type
- * for those detected by a {@link StatisticalNameFinder} but also present in a
+ * detected by a {@link StatisticalSequenceLabeler}; it also corrects the Name type
+ * for those detected by a {@link StatisticalSequenceLabeler} but also present in a
  * dictionary.
  * </ol>
  * 
@@ -49,12 +47,12 @@ import opennlp.tools.util.Span;
  * 
  */
 
-public class DictionariesNameFinder implements NameFinder {
+public class DictionariesNameFinder {
 
   /**
    * The name factory to create Name objects.
    */
-  private NameFactory nameFactory;
+  private SequenceFactory nameFactory;
   /**
    * The dictionary to find the names.
    */
@@ -85,7 +83,7 @@ public class DictionariesNameFinder implements NameFinder {
    *          the factory
    */
   public DictionariesNameFinder(final Dictionaries aDictionaries,
-      final NameFactory aNameFactory) {
+      final SequenceFactory aNameFactory) {
     this.dictionaries = aDictionaries;
     this.nameFactory = aNameFactory;
   }
@@ -95,13 +93,13 @@ public class DictionariesNameFinder implements NameFinder {
    * 
    * @param tokens
    *          the tokenized sentence
-   * @return a list of detected {@link Name} objects
+   * @return a list of detected {@link Sequence} objects
    */
-  public final List<Name> getNames(final String[] tokens) {
+  public final List<Sequence> getNames(final String[] tokens) {
 
     Span[] origSpans = nercToSpans(tokens);
     Span[] neSpans = NameFinderME.dropOverlappingSpans(origSpans);
-    List<Name> names = getNamesFromSpans(neSpans, tokens);
+    List<Sequence> names = getNamesFromSpans(neSpans, tokens);
     return names;
   }
 
@@ -165,21 +163,21 @@ public class DictionariesNameFinder implements NameFinder {
   }
 
   /**
-   * Creates a list of {@link Name} objects from spans and tokens.
+   * Creates a list of {@link Sequence} objects from spans and tokens.
    * 
    * @param neSpans
    *          the spans of the entities in the sentence
    * @param tokens
    *          the tokenized sentence
-   * @return a list of {@link Name} objects
+   * @return a list of {@link Sequence} objects
    */
-  public final List<Name> getNamesFromSpans(final Span[] neSpans,
+  public final List<Sequence> getNamesFromSpans(final Span[] neSpans,
       final String[] tokens) {
-    List<Name> names = new ArrayList<Name>();
+    List<Sequence> names = new ArrayList<Sequence>();
     for (Span neSpan : neSpans) {
       String nameString = StringUtils.getStringFromSpan(neSpan, tokens);
       String neType = neSpan.getType();
-      Name name = nameFactory.createName(nameString, neType, neSpan);
+      Sequence name = nameFactory.createSequence(nameString, neType, neSpan);
       names.add(name);
     }
     return names;

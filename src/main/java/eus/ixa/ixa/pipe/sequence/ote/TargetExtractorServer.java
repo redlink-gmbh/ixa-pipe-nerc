@@ -14,7 +14,7 @@
     limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.sequence;
+package eus.ixa.ixa.pipe.sequence.ote;
 
 import ixa.kaflib.KAFDocument;
 
@@ -32,7 +32,7 @@ import org.jdom2.JDOMException;
 
 import com.google.common.io.Files;
 
-import eus.ixa.ixa.pipe.sequence.ote.OpinionTargetExtractor;
+import eus.ixa.ixa.pipe.sequence.CLI;
 
 public class TargetExtractorServer {
 

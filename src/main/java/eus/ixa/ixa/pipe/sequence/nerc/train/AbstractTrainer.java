@@ -18,17 +18,16 @@ package eus.ixa.ixa.pipe.sequence.nerc.train;
 
 import java.io.IOException;
 
-import opennlp.tools.namefind.BilouCodec;
-import opennlp.tools.namefind.BioCodec;
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.NameSample;
-import opennlp.tools.namefind.NameSampleDataStream;
-import opennlp.tools.namefind.NameSampleTypeFilter;
-import opennlp.tools.namefind.TokenNameFinderFactory;
-import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.TrainingParameters;
-import eus.ixa.ixa.pipe.sequence.eval.SequenceEvaluator;
+import eus.ixa.ixa.pipe.sequence.BilouCodec;
+import eus.ixa.ixa.pipe.sequence.BioCodec;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerEvaluator;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerFactory;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerME;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerModel;
+import eus.ixa.ixa.pipe.sequence.SequenceSample;
+import eus.ixa.ixa.pipe.sequence.SequenceSampleTypeFilter;
 import eus.ixa.ixa.pipe.sequence.formats.CoNLL02Format;
 import eus.ixa.ixa.pipe.sequence.formats.CoNLL03Format;
 
@@ -55,11 +54,11 @@ public abstract class AbstractTrainer implements Trainer {
   /**
    * ObjectStream of the training data.
    */
-  private ObjectStream<NameSample> trainSamples;
+  private ObjectStream<SequenceSample> trainSamples;
   /**
    * ObjectStream of the test data.
    */
-  private ObjectStream<NameSample> testSamples;
+  private ObjectStream<SequenceSample> testSamples;
   /**
    * The corpus format: conll02, conll03 and opennlp.
    */
@@ -83,7 +82,7 @@ public abstract class AbstractTrainer implements Trainer {
   /**
    * features needs to be implemented by any class extending this one.
    */
-  private TokenNameFinderFactory nameClassifierFactory;
+  private SequenceLabelerFactory nameClassifierFactory;
 
   /**
    * Construct a trainer with training and test data, and with options for
@@ -107,8 +106,8 @@ public abstract class AbstractTrainer implements Trainer {
     if (params.getSettings().get("Types") != null) {
       String netypes = params.getSettings().get("Types");
       String[] neTypes = netypes.split(",");
-      trainSamples = new NameSampleTypeFilter(neTypes, trainSamples);
-      testSamples = new NameSampleTypeFilter(neTypes, testSamples);
+      trainSamples = new SequenceSampleTypeFilter(neTypes, trainSamples);
+      testSamples = new SequenceSampleTypeFilter(neTypes, testSamples);
     }
   }
 
@@ -118,18 +117,18 @@ public abstract class AbstractTrainer implements Trainer {
    * es.ehu.si.ixa.pipe.nerc.train.Trainer#train(opennlp.tools.util
    * .TrainingParameters)
    */
-  public final TokenNameFinderModel train(final TrainingParameters params) {
-    if (getNameClassifierFactory() == null) {
+  public final SequenceLabelerModel train(final TrainingParameters params) {
+    if (getSequenceLabelerFactory() == null) {
       throw new IllegalStateException(
           "Classes derived from AbstractNameFinderTrainer must create and fill the AdaptiveFeatureGenerator features!");
     }
-    TokenNameFinderModel trainedModel = null;
-    SequenceEvaluator nerEvaluator = null;
+    SequenceLabelerModel trainedModel = null;
+    SequenceLabelerEvaluator nerEvaluator = null;
     try {
-      trainedModel = NameFinderME.train(lang, null, trainSamples, params,
+      trainedModel = SequenceLabelerME.train(lang, null, trainSamples, params,
           nameClassifierFactory);
-      NameFinderME nerTagger = new NameFinderME(trainedModel);
-      nerEvaluator = new SequenceEvaluator(nerTagger);
+      SequenceLabelerME nerTagger = new SequenceLabelerME(trainedModel);
+      nerEvaluator = new SequenceLabelerEvaluator(nerTagger);
       nerEvaluator.evaluate(testSamples);
     } catch (IOException e) {
       System.err.println("IO error while loading traing and test sets!");
@@ -137,7 +136,7 @@ public abstract class AbstractTrainer implements Trainer {
       System.exit(1);
     }
     System.out.println("Final Result: \n" + nerEvaluator.getFMeasure());
-    System.out.println("Word accuracy: " + nerEvaluator.getWordAccuracy());
+    //System.out.println("Word accuracy: " + nerEvaluator.getWordAccuracy());
     return trainedModel;
   }
 
@@ -152,18 +151,15 @@ public abstract class AbstractTrainer implements Trainer {
    * @throws IOException
    *           the io exception
    */
-  public static ObjectStream<NameSample> getNameStream(final String inputData,
+  public static ObjectStream<SequenceSample> getNameStream(final String inputData,
       final String clearFeatures, final String aCorpusFormat) throws IOException {
-    ObjectStream<NameSample> samples = null;
+    ObjectStream<SequenceSample> samples = null;
     if (aCorpusFormat.equalsIgnoreCase("conll03")) {
       ObjectStream<String> nameStream = InputOutputUtils.readFileIntoMarkableStreamFactory(inputData);
       samples = new CoNLL03Format(clearFeatures, nameStream);
     } else if (aCorpusFormat.equalsIgnoreCase("conll02")) {
       ObjectStream<String> nameStream = InputOutputUtils.readFileIntoMarkableStreamFactory(inputData);
       samples = new CoNLL02Format(clearFeatures, nameStream);
-    } else if (aCorpusFormat.equalsIgnoreCase("opennlp")) {
-      ObjectStream<String> nameStream = InputOutputUtils.readFileIntoMarkableStreamFactory(inputData);
-      samples = new NameSampleDataStream(nameStream);
     } else {
       System.err.println("Test set corpus format not valid!!");
       System.exit(1);
@@ -176,11 +172,11 @@ public abstract class AbstractTrainer implements Trainer {
    * this class.
    * @return the features
    */
-  public final TokenNameFinderFactory getNameClassifierFactory() {
+  public final SequenceLabelerFactory getSequenceLabelerFactory() {
     return nameClassifierFactory;
   }
   
-  public final TokenNameFinderFactory setNameClassifierFactory(TokenNameFinderFactory tokenNameFinderFactory) {
+  public final SequenceLabelerFactory setSequenceLabelerFactory(SequenceLabelerFactory tokenNameFinderFactory) {
     this.nameClassifierFactory = tokenNameFinderFactory;
     return nameClassifierFactory;
   }

@@ -37,7 +37,7 @@ import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.eval.EvaluationMonitor;
 import eus.ixa.ixa.pipe.sequence.features.XMLFeatureDescriptor;
 import eus.ixa.ixa.pipe.sequence.nerc.train.AbstractTrainer;
-import eus.ixa.ixa.pipe.sequence.nerc.train.FixedTrainer;
+import eus.ixa.ixa.pipe.sequence.nerc.train.DefaultTrainer;
 import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
 
 /**
@@ -112,7 +112,7 @@ public class CrossValidator {
     System.err.println(featureDescription);
     byte[] featureGeneratorBytes = featureDescription.getBytes(Charset
         .forName("UTF-8"));
-    Map<String, Object> resources = FixedTrainer.loadResources(params, featureGeneratorBytes);
+    Map<String, Object> resources = DefaultTrainer.loadResources(params, featureGeneratorBytes);
     this.nameClassifierFactory = TokenNameFinderFactory.create(
         TokenNameFinderFactory.class.getName(), featureGeneratorBytes,
         resources, sequenceCodec);

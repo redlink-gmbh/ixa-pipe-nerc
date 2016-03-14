@@ -1,5 +1,5 @@
 /*
- *Copyright 2014 Rodrigo Agerri
+ *Copyright 2016 Rodrigo Agerri
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -19,131 +19,131 @@ package eus.ixa.ixa.pipe.sequence;
 import opennlp.tools.util.Span;
 
 /**
- * A <code>Name</code> object contains a single String, a {@link Span}, a
+ * A <code>Sequence</code> object contains a single String, a {@link Span}, a
  * startOffset and the length of the String. These attributes are set or
  * returned in response to requests.
  *
  * @author ragerri
- * @version 2013-03-12
+ * @version 2016-03-14
  *
  */
-public class Name {
+public class Sequence {
 
   /**
-   * The string of the name.
+   * The string of the sequence.
    */
   private String str;
 
   /**
-   * The {@link Span} of the Name.
+   * The {@link Span} of the Sequence.
    */
-  private Span neSpan;
+  private Span sequenceSpan;
   /**
    * The Name Entity class.
    */
   private String type;
 
   /**
-   * Start position of the <code>Name</code> in the original input string.
+   * Start position of the <code>Sequence</code> in the original input string.
    */
   private int startOffset = -1;
 
   /**
-   * Length of the Name in the original input string.
+   * Length of the Sequence in the original input string.
    */
-  private int nameLength = -1;
+  private int sequenceLength = -1;
 
   /**
-   * Create a new <code>Name</code> with a null content (i.e., str).
+   * Create a new <code>Sequence</code> with a null content (i.e., str).
    */
-  public Name() {
+  public Sequence() {
   }
 
   /**
-   * Create a new <code>Name</code> with the given string.
+   * Create a new <code>Sequence</code> with the given string.
    *
    * @param aStr
    *          the new label's content
    * @param aType
    *          the class of the name
    */
-  public Name(final String aStr, final String aType) {
+  public Sequence(final String aStr, final String aType) {
     this.str = aStr;
     this.type = aType.toUpperCase();
   }
 
   /**
-   * Create a new <code>Name</code> with the given string and Span.
+   * Create a new <code>Sequence</code> with the given string and Span.
    *
    * @param aStr
    *          the new label's content
    * @param aType
-   *          the Named Entity class of the Name
-   * @param aNeSpan
-   *          the span of the Name
+   *          the class of the Span
+   * @param aSeqSpan
+   *          the span of the sequence
    */
-  public Name(final String aStr, final String aType, final Span aNeSpan) {
+  public Sequence(final String aStr, final String aType, final Span aSeqSpan) {
     this.str = aStr;
     this.type = aType.toUpperCase();
-    this.neSpan = aNeSpan;
+    this.sequenceSpan = aSeqSpan;
   }
 
   /**
-   * Creates a new <code>Name</code> with the given content.
+   * Creates a new <code>Sequence</code> with the given content.
    *
    * @param aStr
    *          The new label's content
    * @param aType
-   *          Named Entity class of the Name
+   *          the class of the Sequence
    * @param aStartOffset
    *          Start offset in original text
-   * @param aNameLength
+   * @param aSeqLength
    *          End offset in original text
    */
-  public Name(final String aStr, final String aType,
-      final int aStartOffset, final int aNameLength) {
+  public Sequence(final String aStr, final String aType,
+      final int aStartOffset, final int aSeqLength) {
     this.str = aStr;
     this.type = aType.toUpperCase();
     setStartOffset(aStartOffset);
-    setNameLength(aNameLength);
+    setSequenceLength(aSeqLength);
   }
 
   /**
-   * Creates a new <code>Name</code> with the given content.
+   * Creates a new <code>Sequence</code> with the given content.
    *
    * @param aStr
    *          The new label's content
    * @param aType
-   *          Name Entity class of the Name
-   * @param aNeSpan
-   *          the name span
+   *          the class of the sequence
+   * @param aSeqSpan
+   *          the sequence span
    * @param aStartOffset
    *          Start offset in original text
-   * @param aNameLength
+   * @param aSeqLength
    *          End offset in original text
    */
-  public Name(final String aStr, final String aType, final Span aNeSpan,
-      final int aStartOffset, final int aNameLength) {
+  public Sequence(final String aStr, final String aType, final Span aSeqSpan,
+      final int aStartOffset, final int aSeqLength) {
     this.str = aStr;
     this.type = aType.toUpperCase();
-    this.neSpan = aNeSpan;
+    this.sequenceSpan = aSeqSpan;
     setStartOffset(aStartOffset);
-    setNameLength(aNameLength);
+    setSequenceLength(aSeqLength);
   }
 
   /**
-   * Return the word value of the label (or null if none).
+   * Return the string of the sequence (or null if none).
    *
-   * @return String the word value for the label
+   * @return the string value for the label
    */
-  public final String value() {
+  public final String getString() {
     return str;
   }
 
   /**
-   * Return the type of the Name.
+   * Return the type of the Sequence.
    *
-   * @return the type of the Name
+   * @return the type of the Sequence
    */
   public final String getType() {
     return type;
@@ -155,24 +155,24 @@ public class Name {
    * @return the Span
    */
   public final Span getSpan() {
-    return neSpan;
+    return sequenceSpan;
   }
 
   /**
-   * Set the value for the label.
+   * Set the value for the Sequence.
    *
    * @param value
-   *          The value for the label
+   *          The value for the Sequence
    */
   public final void setValue(final String value) {
     str = value;
   }
 
   /**
-   * Set type of the Name.
+   * Set type of the Sequence.
    *
    * @param neType
-   *          the class of the Name
+   *          the class of the Sequence
    */
   public final void setType(final String neType) {
     type = neType.toUpperCase();
@@ -185,14 +185,14 @@ public class Name {
    *          the Span of the name
    */
   public final void setSpan(final Span span) {
-    neSpan = span;
+    sequenceSpan = span;
   }
 
   /**
-   * Set the label from a String.
+   * Set the value from a String.
    *
    * @param aStr
-   *          The str for the label
+   *          The str for the sequence
    */
   public final void setFromString(final String aStr) {
     this.str = aStr;
@@ -211,10 +211,10 @@ public class Name {
   }
 
   /**
-   * @return the length in characters of the name
+   * @return the length in characters of the sequence
    */
-  public final int nameLength() {
-    return nameLength;
+  public final int sequenceLength() {
+    return sequenceLength;
   }
 
   /**
@@ -226,10 +226,10 @@ public class Name {
   }
 
   /**
-   * @param aNameLength
-   *          the length of the name
+   * @param aSeqLength
+   *          the length of the sequence
    */
-  public final void setNameLength(final int aNameLength) {
-    this.nameLength = aNameLength;
+  public final void setSequenceLength(final int aSeqLength) {
+    this.sequenceLength = aSeqLength;
   }
 }

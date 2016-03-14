@@ -38,7 +38,7 @@ import opennlp.tools.util.Span;
  *
  */
 
-public class StatisticalNameFinder implements NameFinder {
+public class StatisticalSequenceLabeler {
 
   /**
    * The models to use for every language. The keys of the hash are the
@@ -53,13 +53,13 @@ public class StatisticalNameFinder implements NameFinder {
   /**
    * The name factory.
    */
-  private NameFactory nameFactory;
+  private SequenceFactory nameFactory;
 
   /**
    * Construct a probabilistic name finder specifying lang, model and beamsize.
    * @param props the properties to be loaded
    */
-  public StatisticalNameFinder(final Properties props) {
+  public StatisticalSequenceLabeler(final Properties props) {
     String lang = props.getProperty("language");
     String model = props.getProperty("model");
     TokenNameFinderModel nerModel = loadModel(lang, model);
@@ -74,7 +74,7 @@ public class StatisticalNameFinder implements NameFinder {
    * @param props the properties
    * @param aNameFactory the name factory to construct Name objects
    */
-  public StatisticalNameFinder(final Properties props, final NameFactory aNameFactory) {
+  public StatisticalSequenceLabeler(final Properties props, final SequenceFactory aNameFactory) {
 
     String lang = props.getProperty("language");
     String model = props.getProperty("model");
@@ -85,21 +85,21 @@ public class StatisticalNameFinder implements NameFinder {
 
   
   /**
-   * Method to produce a list of the {@link Name} objects classified by the
+   * Method to produce a list of the {@link Sequence} objects classified by the
    * probabilistic model.
    *
    * Takes an array of tokens, calls nercToSpans function for probabilistic NERC
-   * and returns a List of {@link Name} objects containing the nameString, the
+   * and returns a List of {@link Sequence} objects containing the nameString, the
    * type and the {@link Span}
    *
    * @param tokens
    *          an array of tokenized text
    * @return a List of names
    */
-  public final List<Name> getNames(final String[] tokens) {
+  public final List<Sequence> getNames(final String[] tokens) {
     Span[] origSpans = nercToSpans(tokens);
     Span[] neSpans = NameFinderME.dropOverlappingSpans(origSpans);
-    List<Name> names = getNamesFromSpans(neSpans, tokens);
+    List<Sequence> names = getNamesFromSpans(neSpans, tokens);
     return names;
   }
 
@@ -124,18 +124,18 @@ public class StatisticalNameFinder implements NameFinder {
   }
 
   /**
-   * Creates a list of {@link Name} objects from spans and tokens.
+   * Creates a list of {@link Sequence} objects from spans and tokens.
    *
    * @param neSpans the named entity spans of a sentence
    * @param tokens the tokens in the sentence
-   * @return a list of {@link Name} objects
+   * @return a list of {@link Sequence} objects
    */
-  public final List<Name> getNamesFromSpans(final Span[] neSpans, final String[] tokens) {
-    List<Name> names = new ArrayList<Name>();
+  public final List<Sequence> getNamesFromSpans(final Span[] neSpans, final String[] tokens) {
+    List<Sequence> names = new ArrayList<Sequence>();
     for (Span neSpan : neSpans) {
       String nameString = StringUtils.getStringFromSpan(neSpan, tokens);
       String neType = neSpan.getType();
-      Name name = nameFactory.createName(nameString, neType, neSpan);
+      Sequence name = nameFactory.createSequence(nameString, neType, neSpan);
       names.add(name);
     }
     return names;

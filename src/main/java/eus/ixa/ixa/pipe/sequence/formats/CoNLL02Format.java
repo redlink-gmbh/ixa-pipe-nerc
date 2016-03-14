@@ -22,13 +22,13 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
-import opennlp.tools.namefind.NameSample;
 import opennlp.tools.util.InputStreamFactory;
 import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.Span;
 import opennlp.tools.util.StringUtil;
+import eus.ixa.ixa.pipe.sequence.SequenceSample;
 
 /**
  * 2 fields CoNLL 2002 tabulated format: word\tabclass\n B- start chunk I-
@@ -38,7 +38,7 @@ import opennlp.tools.util.StringUtil;
  * @version 2015-02-24
  * 
  */
-public class CoNLL02Format implements ObjectStream<NameSample> {
+public class CoNLL02Format implements ObjectStream<SequenceSample> {
 
   /**
    * The stream.
@@ -50,7 +50,7 @@ public class CoNLL02Format implements ObjectStream<NameSample> {
   private String clearFeatures;
 
   /**
-   * Construct a Name Stream from a language and a {@code ObjectStream}.
+   * Construct a Sequence Stream from a language and a {@code ObjectStream}.
    * 
    * @param clearFeatures
    *          reset the adaptive features
@@ -84,10 +84,10 @@ public class CoNLL02Format implements ObjectStream<NameSample> {
     }
   }
 
-  public NameSample read() throws IOException {
+  public SequenceSample read() throws IOException {
 
     List<String> tokens = new ArrayList<String>();
-    List<String> neTypes = new ArrayList<String>();
+    List<String> seqTypes = new ArrayList<String>();
 
     boolean isClearAdaptiveData = false;
     // Empty line indicates end of sentence
@@ -106,7 +106,7 @@ public class CoNLL02Format implements ObjectStream<NameSample> {
       String fields[] = line.split("\t");
       if (fields.length == 2) {
         tokens.add(fields[0]);
-        neTypes.add(fields[1]);
+        seqTypes.add(fields[1]);
       } else {
         throw new IOException(
             "Expected two fields per line in training data, got "
@@ -118,15 +118,15 @@ public class CoNLL02Format implements ObjectStream<NameSample> {
       isClearAdaptiveData = true;
     }
     if (tokens.size() > 0) {
-      // convert name tags into spans
-      List<Span> names = new ArrayList<Span>();
+      // convert sequence tags into spans
+      List<Span> sequences = new ArrayList<Span>();
       int beginIndex = -1;
       int endIndex = -1;
-      for (int i = 0; i < neTypes.size(); i++) {
-        String neTag = neTypes.get(i);
+      for (int i = 0; i < seqTypes.size(); i++) {
+        String neTag = seqTypes.get(i);
         if (neTag.startsWith("B-")) {
           if (beginIndex != -1) {
-            names.add(extract(beginIndex, endIndex, neTypes.get(beginIndex)));
+            sequences.add(extract(beginIndex, endIndex, seqTypes.get(beginIndex)));
             beginIndex = -1;
             endIndex = -1;
           }
@@ -136,7 +136,7 @@ public class CoNLL02Format implements ObjectStream<NameSample> {
           endIndex++;
         } else if (neTag.equals("O")) {
           if (beginIndex != -1) {
-            names.add(extract(beginIndex, endIndex, neTypes.get(beginIndex)));
+            sequences.add(extract(beginIndex, endIndex, seqTypes.get(beginIndex)));
             beginIndex = -1;
             endIndex = -1;
           }
@@ -146,10 +146,10 @@ public class CoNLL02Format implements ObjectStream<NameSample> {
       }
       // if one span remains, create it here
       if (beginIndex != -1)
-        names.add(extract(beginIndex, endIndex, neTypes.get(beginIndex)));
+        sequences.add(extract(beginIndex, endIndex, seqTypes.get(beginIndex)));
 
-      return new NameSample(tokens.toArray(new String[tokens.size()]),
-          names.toArray(new Span[names.size()]), isClearAdaptiveData);
+      return new SequenceSample(tokens.toArray(new String[tokens.size()]),
+          sequences.toArray(new Span[sequences.size()]), isClearAdaptiveData);
     } else if (line != null) {
       // Just filter out empty events, if two lines in a row are empty
       return read();

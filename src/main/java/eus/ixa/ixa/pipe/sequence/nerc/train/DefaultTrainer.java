@@ -25,12 +25,12 @@ import java.util.List;
 import java.util.Map;
 
 import opennlp.tools.cmdline.CmdLineUtil;
-import opennlp.tools.namefind.TokenNameFinderFactory;
-import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.util.SequenceCodec;
 import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.model.ArtifactSerializer;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerFactory;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerModel;
 import eus.ixa.ixa.pipe.sequence.StringUtils;
 import eus.ixa.ixa.pipe.sequence.dict.BrownCluster;
 import eus.ixa.ixa.pipe.sequence.dict.ClarkCluster;
@@ -74,14 +74,14 @@ import eus.ixa.ixa.pipe.sequence.features.XMLFeatureDescriptor;
  * @author ragerri
  * @version 2015-03-27
  */
-public class FixedTrainer extends AbstractTrainer {
+public class DefaultTrainer extends AbstractTrainer {
   
   /**
    * Construct a trainer.
    * @param params the training parameters
    * @throws IOException if io errors
    */
-  public FixedTrainer(final TrainingParameters params) throws IOException {
+  public DefaultTrainer(final TrainingParameters params) throws IOException {
     super(params);
     createTrainer(params);
   }
@@ -95,7 +95,7 @@ public class FixedTrainer extends AbstractTrainer {
    */
   public void createTrainer(TrainingParameters params) throws IOException {
     String seqCodec = getSequenceCodec();
-    SequenceCodec<String> sequenceCodec = TokenNameFinderFactory
+    SequenceCodec<String> sequenceCodec = SequenceLabelerFactory
         .instantiateSequenceCodec(seqCodec);
     String featureDescription = XMLFeatureDescriptor
         .createXMLFeatureDescriptor(params);
@@ -103,8 +103,8 @@ public class FixedTrainer extends AbstractTrainer {
     byte[] featureGeneratorBytes = featureDescription.getBytes(Charset
         .forName("UTF-8"));
     Map<String, Object> resources = loadResources(params, featureGeneratorBytes);
-    setNameClassifierFactory(TokenNameFinderFactory.create(
-        TokenNameFinderFactory.class.getName(), featureGeneratorBytes,
+    setSequenceLabelerFactory(SequenceLabelerFactory.create(
+        SequenceLabelerFactory.class.getName(), featureGeneratorBytes,
         resources, sequenceCodec));
   }
 
@@ -119,7 +119,7 @@ public class FixedTrainer extends AbstractTrainer {
       byte[] featureGenDescriptor) throws IOException {
     Map<String, Object> resources = new HashMap<String, Object>();
     @SuppressWarnings("rawtypes")
-    Map<String, ArtifactSerializer> artifactSerializers = TokenNameFinderModel.createArtifactSerializers();
+    Map<String, ArtifactSerializer> artifactSerializers = SequenceLabelerModel.createArtifactSerializers();
     
     if (Flags.isBrownFeatures(params)) {
       String brownClusterPath = Flags.getBrownFeatures(params);

@@ -16,8 +16,7 @@
 
 package eus.ixa.ixa.pipe.sequence.nerc.train;
 
-
-import opennlp.tools.namefind.TokenNameFinderModel;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerModel;
 import opennlp.tools.util.TrainingParameters;
 
 /**
@@ -29,12 +28,12 @@ import opennlp.tools.util.TrainingParameters;
 public interface Trainer {
  
   /**
-   * Generate {@link TokenNameFinderModel} models.
+   * Generate {@link SequenceLabelerModel} models.
    * @param params
    *          the training parameters file
    * @return the model
    */
-  TokenNameFinderModel train(TrainingParameters params);
+  SequenceLabelerModel train(TrainingParameters params);
 
 }
 

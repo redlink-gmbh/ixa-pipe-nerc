@@ -19,38 +19,36 @@ import java.io.BufferedReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import eus.ixa.ixa.pipe.sequence.Name;
-import eus.ixa.ixa.pipe.sequence.NameFactory;
-import eus.ixa.ixa.pipe.sequence.NameFinder;
+import opennlp.tools.namefind.NameFinderME;
+import opennlp.tools.util.Span;
+import eus.ixa.ixa.pipe.sequence.Sequence;
+import eus.ixa.ixa.pipe.sequence.SequenceFactory;
 import eus.ixa.ixa.pipe.sequence.StringUtils;
 import eus.ixa.ixa.pipe.sequence.nerc.lexer.NumericNameLexer;
 
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.util.Span;
-
-public class NumericNameFinder implements NameFinder {
+public class NumericNameFinder {
   
   private NumericNameLexer numericLexer;
-  private NameFactory nameFactory;
+  private SequenceFactory nameFactory;
   
-  public NumericNameFinder(BufferedReader breader, NameFactory aNameFactory) {
+  public NumericNameFinder(BufferedReader breader, SequenceFactory aNameFactory) {
     this.nameFactory = aNameFactory;
     numericLexer = new NumericNameLexer(breader, aNameFactory);
   }
 
-  public List<Name> getNames(String[] tokens) {
+  public List<Sequence> getNames(String[] tokens) {
     Span[] origSpans = nercToSpans(tokens);
     Span[] neSpans = NameFinderME.dropOverlappingSpans(origSpans);
-    List<Name> names = getNamesFromSpans(neSpans, tokens);
+    List<Sequence> names = getNamesFromSpans(neSpans, tokens);
     return names;
   }
 
   public Span[] nercToSpans(final String[] tokens) {
     List<Span> neSpans = new ArrayList<Span>();
-    List<Name> flexNameList = numericLexer.getNumericNames();
-    for (Name name : flexNameList) {
+    List<Sequence> flexNameList = numericLexer.getNumericNames();
+    for (Sequence name : flexNameList) {
       //System.err.println("numeric name: " + name.value());
-      List<Integer> neIds = StringUtils.exactTokenFinderIgnoreCase(name.value(), tokens);
+      List<Integer> neIds = StringUtils.exactTokenFinderIgnoreCase(name.getString(), tokens);
       for (int i = 0; i < neIds.size(); i += 2) {
         Span neSpan = new Span(neIds.get(i), neIds.get(i+1), name.getType());
         neSpans.add(neSpan);
@@ -59,12 +57,12 @@ public class NumericNameFinder implements NameFinder {
     return neSpans.toArray(new Span[neSpans.size()]);
   }
 
-  public List<Name> getNamesFromSpans(Span[] neSpans, String[] tokens) {
-    List<Name> names = new ArrayList<Name>();
+  public List<Sequence> getNamesFromSpans(Span[] neSpans, String[] tokens) {
+    List<Sequence> names = new ArrayList<Sequence>();
     for (Span neSpan : neSpans) {
       String nameString = StringUtils.getStringFromSpan(neSpan, tokens);
       String neType = neSpan.getType();
-      Name name = nameFactory.createName(nameString, neType, neSpan);
+      Sequence name = nameFactory.createSequence(nameString, neType, neSpan);
       names.add(name);
     }
     return names;

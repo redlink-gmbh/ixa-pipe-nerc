@@ -48,11 +48,13 @@ import com.google.common.io.Files;
 import eus.ixa.ixa.pipe.sequence.eval.CrossValidator;
 import eus.ixa.ixa.pipe.sequence.eval.Evaluate;
 import eus.ixa.ixa.pipe.sequence.nerc.Annotate;
-import eus.ixa.ixa.pipe.sequence.nerc.train.FixedTrainer;
+import eus.ixa.ixa.pipe.sequence.nerc.NameFinderServer;
+import eus.ixa.ixa.pipe.sequence.nerc.train.DefaultTrainer;
 import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
 import eus.ixa.ixa.pipe.sequence.nerc.train.InputOutputUtils;
 import eus.ixa.ixa.pipe.sequence.nerc.train.Trainer;
 import eus.ixa.ixa.pipe.sequence.ote.OpinionTargetExtractor;
+import eus.ixa.ixa.pipe.sequence.ote.TargetExtractorServer;
 
 /**
  * Main class of ixa-pipe-nerc, the ixa pipes (ixa2.si.ehu.es/ixa-pipes) sequence
@@ -329,7 +331,7 @@ public class CLI {
     else {
       outModel = Flags.getModel(params);
     }
-    Trainer nercTrainer = new FixedTrainer(params);
+    Trainer nercTrainer = new DefaultTrainer(params);
     TokenNameFinderModel trainedModel = nercTrainer.train(params);
     CmdLineUtil.writeModel("ixa-pipe-nerc", new File(outModel), trainedModel);
   }

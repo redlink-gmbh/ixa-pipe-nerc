@@ -36,10 +36,10 @@ import com.google.common.collect.Lists;
 import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.namefind.NameSample;
 import opennlp.tools.util.Span;
-import eus.ixa.ixa.pipe.sequence.Name;
-import eus.ixa.ixa.pipe.sequence.NameFactory;
+import eus.ixa.ixa.pipe.sequence.Sequence;
+import eus.ixa.ixa.pipe.sequence.SequenceFactory;
 import eus.ixa.ixa.pipe.sequence.SpanUtils;
-import eus.ixa.ixa.pipe.sequence.StatisticalNameFinder;
+import eus.ixa.ixa.pipe.sequence.StatisticalSequenceLabeler;
 import eus.ixa.ixa.pipe.sequence.StringUtils;
 import eus.ixa.ixa.pipe.sequence.dict.Dictionaries;
 import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
@@ -56,11 +56,11 @@ public class Annotate {
   /**
    * The name factory.
    */
-  private NameFactory nameFactory;
+  private SequenceFactory nameFactory;
   /**
    * The NameFinder to do the annotation. Usually the statistical.
    */
-  private StatisticalNameFinder nameFinder;
+  private StatisticalSequenceLabeler nameFinder;
   /**
    * The dictionaries.
    */
@@ -111,13 +111,13 @@ public class Annotate {
   public Annotate(final Properties properties) throws IOException {
 
     this.clearFeatures = properties.getProperty("clearFeatures");
-    nameFactory = new NameFactory();
+    nameFactory = new SequenceFactory();
     annotateOptions(properties);
   }
 
   /**
    * Generates the right options for NERC tagging: using the
-   * {@link StatisticalNameFinder} or using the {@link DictionariesNameFinder}
+   * {@link StatisticalSequenceLabeler} or using the {@link DictionariesNameFinder}
    * or a combination of those with the {@link NumericNameFinder}.
    * 
    * @param properties
@@ -150,12 +150,12 @@ public class Annotate {
           postProcess = false;
           statistical = false;
         } else if (dictOption.equalsIgnoreCase("post")) {
-          nameFinder = new StatisticalNameFinder(properties, nameFactory);
+          nameFinder = new StatisticalSequenceLabeler(properties, nameFactory);
           statistical = true;
           postProcess = true;
           dictTag = false;
         } else {
-          nameFinder = new StatisticalNameFinder(properties, nameFactory);
+          nameFinder = new StatisticalSequenceLabeler(properties, nameFactory);
           statistical = true;
           dictTag = false;
           postProcess = false;
@@ -166,13 +166,13 @@ public class Annotate {
       statistical = true;
       dictTag = false;
       postProcess = false;
-      nameFinder = new StatisticalNameFinder(properties, nameFactory);
+      nameFinder = new StatisticalSequenceLabeler(properties, nameFactory);
     } else {
       lexerFind = false;
       statistical = true;
       dictTag = false;
       postProcess = false;
-      nameFinder = new StatisticalNameFinder(properties, nameFactory);
+      nameFinder = new StatisticalSequenceLabeler(properties, nameFactory);
     }
   }
   
@@ -180,7 +180,7 @@ public class Annotate {
    * Get the statistical namefinder.
    * @return the statistical namefinder
    */
-  public StatisticalNameFinder getStatisticalNameFinder() {
+  public StatisticalSequenceLabeler getStatisticalNameFinder() {
     return nameFinder;
   }
 
@@ -232,13 +232,13 @@ public class Annotate {
       }
       Span[] allSpansArray = NameFinderME.dropOverlappingSpans(allSpans
           .toArray(new Span[allSpans.size()]));
-      List<Name> names = new ArrayList<Name>();
+      List<Sequence> names = new ArrayList<Sequence>();
       if (statistical) {
         names = nameFinder.getNamesFromSpans(allSpansArray, tokens);
       } else {
         names = dictFinder.getNamesFromSpans(allSpansArray, tokens);
       }
-      for (Name name : names) {
+      for (Sequence name : names) {
         Integer startIndex = name.getSpan().getStart();
         Integer endIndex = name.getSpan().getEnd();
         List<Term> nameTerms = kaf.getTermsFromWFs(Arrays.asList(Arrays

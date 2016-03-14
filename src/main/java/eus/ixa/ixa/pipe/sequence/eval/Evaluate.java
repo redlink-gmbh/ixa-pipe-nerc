@@ -32,6 +32,12 @@ import opennlp.tools.namefind.TokenNameFinderEvaluator;
 import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.eval.EvaluationMonitor;
+import eus.ixa.ixa.pipe.sequence.SequenceLabeler;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerEvaluator;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerME;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerModel;
+import eus.ixa.ixa.pipe.sequence.SequenceSample;
+import eus.ixa.ixa.pipe.sequence.SequenceSampleTypeFilter;
 import eus.ixa.ixa.pipe.sequence.nerc.train.AbstractTrainer;
 import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
 
@@ -46,17 +52,17 @@ public class Evaluate {
   /**
    * The reference corpus to evaluate against.
    */
-  private ObjectStream<NameSample> testSamples;
+  private ObjectStream<SequenceSample> testSamples;
   /**
    * An instance of the probabilistic {@link NameFinderME}.
    */
-  private NameFinderME nameFinder;
+  private SequenceLabeler nameFinder;
   /**
    * The models to use for every language. The keys of the hash are the
    * language codes, the values the models.
    */
-  private static ConcurrentHashMap<String, TokenNameFinderModel> nercModels =
-      new ConcurrentHashMap<String, TokenNameFinderModel>();
+  private static ConcurrentHashMap<String, SequenceLabelerModel> nercModels =
+      new ConcurrentHashMap<String, SequenceLabelerModel>();
  
   /**
    * Construct an evaluator. It takes from the properties a model,
@@ -78,10 +84,10 @@ public class Evaluate {
     testSamples = AbstractTrainer.getNameStream(testSet, clearFeatures, corpusFormat);
     if (netypes != Flags.DEFAULT_NE_TYPES) {
       String[] neTypes = netypes.split(",");
-      testSamples = new NameSampleTypeFilter(neTypes, testSamples);
+      testSamples = new SequenceSampleTypeFilter(neTypes, testSamples);
     }
-    nercModels.putIfAbsent(lang, new TokenNameFinderModel(new FileInputStream(model)));
-    nameFinder = new NameFinderME(nercModels.get(lang));
+    nercModels.putIfAbsent(lang, new SequenceLabelerModel(new FileInputStream(model)));
+    nameFinder = new SequenceLabelerME(nercModels.get(lang));
   }
 
   /**
@@ -89,7 +95,7 @@ public class Evaluate {
    * @throws IOException if test corpus not loaded
    */
   public final void evaluate() throws IOException {
-    SequenceEvaluator evaluator = new SequenceEvaluator(nameFinder);
+    SequenceLabelerEvaluator evaluator = new SequenceLabelerEvaluator(nameFinder);
     evaluator.evaluate(testSamples);
     System.out.println(evaluator.getFMeasure());
     //TODO split F-measure and wordAccuracy?
@@ -102,7 +108,7 @@ public class Evaluate {
    * @throws IOException if test corpus not loaded
    */
   public final void detailEvaluate() throws IOException {
-    List<EvaluationMonitor<NameSample>> listeners = new LinkedList<EvaluationMonitor<NameSample>>();
+    List<EvaluationMonitor<SequenceSample>> listeners = new LinkedList<EvaluationMonitor<SequenceSample>>();
     TokenNameFinderDetailedFMeasureListener detailedFListener = new TokenNameFinderDetailedFMeasureListener();
     listeners.add(detailedFListener);
     TokenNameFinderEvaluator evaluator = new TokenNameFinderEvaluator(nameFinder,
