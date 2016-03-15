@@ -18,7 +18,7 @@ package eus.ixa.ixa.pipe.sequence.features;
 import java.util.ArrayList;
 import java.util.List;
 
-import eus.ixa.ixa.pipe.sequence.dict.BrownCluster;
+import eus.ixa.ixa.pipe.sequence.resources.BrownCluster;
 
 /**
  * Obtain the paths listed in the pathLengths array from the Brown class.

@@ -1,19 +1,3 @@
-/*
- *  Copyright 2015 Rodrigo Agerri
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
-
 package eus.ixa.ixa.pipe.sequence.formats;
 
 import java.io.IOException;
@@ -23,7 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import opennlp.tools.util.InputStreamFactory;
-import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.PlainTextByLineStream;
 import opennlp.tools.util.Span;
@@ -31,14 +14,17 @@ import opennlp.tools.util.StringUtil;
 import eus.ixa.ixa.pipe.sequence.SequenceSample;
 
 /**
- * 2 fields CoNLL 2002 tabulated format: word\tabclass\n B- start chunk I-
- * inside chunk O- outside chunk.
+ * 2 fields in tabulated format: word\tabclass\n. In this format every row is a
+ * span, e.g., all the spans consist of one token. This is typically used when
+ * no BIO chunk notation is used to denote multiple token spans.
+ * 
+ * This is usually the case of word level annotations such as POS tagging.
  * 
  * @author ragerri
- * @version 2015-02-24
+ * @version 2016-03-15
  * 
  */
-public class CoNLL02Format implements ObjectStream<SequenceSample> {
+public class TabulatedFormat implements ObjectStream<SequenceSample> {
 
   /**
    * The stream.
@@ -57,7 +43,7 @@ public class CoNLL02Format implements ObjectStream<SequenceSample> {
    * @param lineStream
    *          the stream
    */
-  public CoNLL02Format(String clearFeatures, ObjectStream<String> lineStream) {
+  public TabulatedFormat(String clearFeatures, ObjectStream<String> lineStream) {
     this.clearFeatures = clearFeatures;
     this.lineStream = lineStream;
   }
@@ -72,7 +58,7 @@ public class CoNLL02Format implements ObjectStream<SequenceSample> {
    * @throws IOException
    *           the input stream exception
    */
-  public CoNLL02Format(String clearFeatures, InputStreamFactory in)
+  public TabulatedFormat(String clearFeatures, InputStreamFactory in)
       throws IOException {
     this.clearFeatures = clearFeatures;
     try {
@@ -93,14 +79,15 @@ public class CoNLL02Format implements ObjectStream<SequenceSample> {
     // Empty line indicates end of sentence
     String line;
     while ((line = lineStream.read()) != null && !StringUtil.isEmpty(line)) {
-      //clear adaptive data if document mark appears following
-      //CoNLL03 conventions
-      if (clearFeatures.equalsIgnoreCase("docstart") 
+      // clear adaptive data if document mark appears following
+      // CoNLL03 conventions
+      if (clearFeatures.equalsIgnoreCase("docstart")
           && line.startsWith("-DOCSTART-")) {
         isClearAdaptiveData = true;
         String emptyLine = lineStream.read();
         if (!StringUtil.isEmpty(emptyLine))
-          throw new IOException("Empty line after -DOCSTART- not empty: '" + emptyLine +"'!");
+          throw new IOException("Empty line after -DOCSTART- not empty: '"
+              + emptyLine + "'!");
         continue;
       }
       String fields[] = line.split("\t");
@@ -123,30 +110,18 @@ public class CoNLL02Format implements ObjectStream<SequenceSample> {
       int beginIndex = -1;
       int endIndex = -1;
       for (int i = 0; i < seqTypes.size(); i++) {
-        String neTag = seqTypes.get(i);
-        if (neTag.startsWith("B-")) {
-          if (beginIndex != -1) {
-            sequences.add(extract(beginIndex, endIndex, seqTypes.get(beginIndex)));
-            beginIndex = -1;
-            endIndex = -1;
-          }
-          beginIndex = i;
-          endIndex = i + 1;
-        } else if (neTag.startsWith("I-")) {
-          endIndex++;
-        } else if (neTag.equals("O")) {
-          if (beginIndex != -1) {
-            sequences.add(extract(beginIndex, endIndex, seqTypes.get(beginIndex)));
-            beginIndex = -1;
-            endIndex = -1;
-          }
-        } else {
-          throw new IOException("Invalid tag: " + neTag);
+        if (beginIndex != -1) {
+          sequences
+              .add(new Span(beginIndex, endIndex, seqTypes.get(beginIndex)));
+          beginIndex = -1;
+          endIndex = -1;
         }
+        beginIndex = i;
+        endIndex = i + 1;
       }
       // if one span remains, create it here
       if (beginIndex != -1)
-        sequences.add(extract(beginIndex, endIndex, seqTypes.get(beginIndex)));
+        sequences.add(new Span(beginIndex, endIndex, seqTypes.get(beginIndex)));
 
       return new SequenceSample(tokens.toArray(new String[tokens.size()]),
           sequences.toArray(new Span[sequences.size()]), isClearAdaptiveData);
@@ -157,13 +132,6 @@ public class CoNLL02Format implements ObjectStream<SequenceSample> {
       // source stream is not returning anymore lines
       return null;
     }
-  }
-
-  static final Span extract(int begin, int end, String beginTag)
-      throws InvalidFormatException {
-
-    String type = beginTag.substring(2);
-    return new Span(begin, end, type);
   }
 
   public void reset() throws IOException, UnsupportedOperationException {

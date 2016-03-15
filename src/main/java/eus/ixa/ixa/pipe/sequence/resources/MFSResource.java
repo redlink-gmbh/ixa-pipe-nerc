@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.sequence.dict;
+package eus.ixa.ixa.pipe.sequence.resources;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

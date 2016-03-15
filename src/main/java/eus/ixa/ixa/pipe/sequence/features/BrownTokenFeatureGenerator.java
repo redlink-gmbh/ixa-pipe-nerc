@@ -25,7 +25,7 @@ import opennlp.tools.util.featuregen.ArtifactToSerializerMapper;
 import opennlp.tools.util.featuregen.CustomFeatureGenerator;
 import opennlp.tools.util.featuregen.FeatureGeneratorResourceProvider;
 import opennlp.tools.util.model.ArtifactSerializer;
-import eus.ixa.ixa.pipe.sequence.dict.BrownCluster;
+import eus.ixa.ixa.pipe.sequence.resources.BrownCluster;
 import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 public class BrownTokenFeatureGenerator extends CustomFeatureGenerator implements ArtifactToSerializerMapper {

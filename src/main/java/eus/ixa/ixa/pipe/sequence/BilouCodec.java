@@ -44,16 +44,15 @@ public class BilouCodec implements SequenceCodec<String> {
         // in this case do nothing
       }
     }
-
     return spans.toArray(new Span[spans.size()]);
   }
 
   @Override
-  public String[] encode(Span[] names, int length) {
+  public String[] encode(Span[] sequences, int length) {
     String[] outcomes = new String[length];
     Arrays.fill(outcomes, BioCodec.OTHER);
 
-    for (Span name : names) {
+    for (Span name : sequences) {
 
       if (name.length() > 1) {
         if (name.getType() == null) {
@@ -71,7 +70,6 @@ public class BilouCodec implements SequenceCodec<String> {
             outcomes[i] = name.getType() + "-" + BioCodec.CONTINUE;
           }
         }
-
         if (name.getType() == null) {
           outcomes[name.getEnd() - 1] = "default" + "-" + BilouCodec.LAST;
         }
@@ -88,7 +86,6 @@ public class BilouCodec implements SequenceCodec<String> {
         }
       }
     }
-
     return outcomes;
   }
 

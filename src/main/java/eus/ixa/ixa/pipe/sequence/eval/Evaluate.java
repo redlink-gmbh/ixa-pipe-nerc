@@ -76,7 +76,7 @@ public class Evaluate {
     String corpusFormat = props.getProperty("corpusFormat");
     String seqTypes = props.getProperty("types");
     
-    testSamples = AbstractTrainer.getNameStream(testSet, clearFeatures, corpusFormat);
+    testSamples = AbstractTrainer.getSequenceStream(testSet, clearFeatures, corpusFormat);
     if (seqTypes != Flags.DEFAULT_SEQUENCE_TYPES) {
       String[] neTypes = seqTypes.split(",");
       testSamples = new SequenceSampleTypeFilter(neTypes, testSamples);

@@ -25,7 +25,7 @@ import opennlp.tools.util.Span;
 import eus.ixa.ixa.pipe.sequence.Sequence;
 import eus.ixa.ixa.pipe.sequence.SequenceFactory;
 import eus.ixa.ixa.pipe.sequence.StatisticalSequenceLabeler;
-import eus.ixa.ixa.pipe.sequence.dict.Dictionaries;
+import eus.ixa.ixa.pipe.sequence.resources.Dictionaries;
 import eus.ixa.ixa.pipe.sequence.utils.StringUtils;
 
 /**

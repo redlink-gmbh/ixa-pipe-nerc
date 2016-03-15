@@ -93,7 +93,7 @@ public class CrossValidator {
     String clearFeatures = Flags.getClearTrainingFeatures(params);
     this.corpusFormat = Flags.getCorpusFormat(params);
     this.trainData = params.getSettings().get("TrainSet");
-    trainSamples = AbstractTrainer.getNameStream(trainData, clearFeatures, corpusFormat);
+    trainSamples = AbstractTrainer.getSequenceStream(trainData, clearFeatures, corpusFormat);
     this.beamSize = Flags.getBeamsize(params);
     this.folds = Flags.getFolds(params);
     this.sequenceCodec =  SequenceLabelerFactory.instantiateSequenceCodec(getSequenceCodec(Flags.getSequenceCodec(params)));

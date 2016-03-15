@@ -26,9 +26,9 @@ import opennlp.tools.util.featuregen.ArtifactToSerializerMapper;
 import opennlp.tools.util.featuregen.CustomFeatureGenerator;
 import opennlp.tools.util.featuregen.FeatureGeneratorResourceProvider;
 import opennlp.tools.util.model.ArtifactSerializer;
-import eus.ixa.ixa.pipe.sequence.dict.LemmaResource;
-import eus.ixa.ixa.pipe.sequence.dict.MFSResource;
-import eus.ixa.ixa.pipe.sequence.dict.POSModelResource;
+import eus.ixa.ixa.pipe.sequence.resources.LemmaResource;
+import eus.ixa.ixa.pipe.sequence.resources.MFSResource;
+import eus.ixa.ixa.pipe.sequence.resources.POSModelResource;
 
 /**
  * Generates Ciaramita and Altun (2006) features for super sense tagging.

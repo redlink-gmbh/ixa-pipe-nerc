@@ -30,6 +30,8 @@ import eus.ixa.ixa.pipe.sequence.SequenceSample;
 import eus.ixa.ixa.pipe.sequence.SequenceSampleTypeFilter;
 import eus.ixa.ixa.pipe.sequence.formats.CoNLL02Format;
 import eus.ixa.ixa.pipe.sequence.formats.CoNLL03Format;
+import eus.ixa.ixa.pipe.sequence.formats.LemmatizerFormat;
+import eus.ixa.ixa.pipe.sequence.formats.TabulatedFormat;
 import eus.ixa.ixa.pipe.sequence.utils.Flags;
 import eus.ixa.ixa.pipe.sequence.utils.InputOutputUtils;
 
@@ -101,8 +103,8 @@ public abstract class AbstractTrainer implements Trainer {
     this.corpusFormat = Flags.getCorpusFormat(params);
     this.trainData = params.getSettings().get("TrainSet");
     this.testData = params.getSettings().get("TestSet");
-    trainSamples = getNameStream(trainData, clearTrainingFeatures, corpusFormat);
-    testSamples = getNameStream(testData, clearEvaluationFeatures, corpusFormat);
+    trainSamples = getSequenceStream(trainData, clearTrainingFeatures, corpusFormat);
+    testSamples = getSequenceStream(testData, clearEvaluationFeatures, corpusFormat);
     this.beamSize = Flags.getBeamsize(params);
     this.sequenceCodec = Flags.getSequenceCodec(params);
     if (params.getSettings().get("Types") != null) {
@@ -153,7 +155,7 @@ public abstract class AbstractTrainer implements Trainer {
    * @throws IOException
    *           the io exception
    */
-  public static ObjectStream<SequenceSample> getNameStream(final String inputData,
+  public static ObjectStream<SequenceSample> getSequenceStream(final String inputData,
       final String clearFeatures, final String aCorpusFormat) throws IOException {
     ObjectStream<SequenceSample> samples = null;
     if (aCorpusFormat.equalsIgnoreCase("conll03")) {
@@ -162,6 +164,12 @@ public abstract class AbstractTrainer implements Trainer {
     } else if (aCorpusFormat.equalsIgnoreCase("conll02")) {
       ObjectStream<String> nameStream = InputOutputUtils.readFileIntoMarkableStreamFactory(inputData);
       samples = new CoNLL02Format(clearFeatures, nameStream);
+    } else if (aCorpusFormat.equalsIgnoreCase("tabulated")) {
+      ObjectStream<String> nameStream = InputOutputUtils.readFileIntoMarkableStreamFactory(inputData);
+      samples = new TabulatedFormat(clearFeatures, nameStream);
+    } else if (aCorpusFormat.equalsIgnoreCase("lemmatizer")) {
+      ObjectStream<String> seqStream = InputOutputUtils.readFileIntoMarkableStreamFactory(inputData);
+      samples = new LemmatizerFormat(clearFeatures, seqStream);
     } else {
       System.err.println("Test set corpus format not valid!!");
       System.exit(1);

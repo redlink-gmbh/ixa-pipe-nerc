@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.sequence.dict;
+package eus.ixa.ixa.pipe.sequence.resources;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -34,58 +34,51 @@ import opennlp.tools.util.model.ArtifactSerializer;
 import opennlp.tools.util.model.SerializableArtifact;
 
 
+
 /**
  * 
- * Class to load a Clark cluster document: word\\s+word_class\\s+prob
- * https://github.com/ninjin/clark_pos_induction
+ * Class to load a Word2Vec cluster document: word\\s+word_class
+ * http://code.google.com/p/word2vec/
  * 
  * The file containing the clustering lexicon has to be passed as the 
- * argument of the DistSim property.
+ * argument of the Word2VecCluster property.
  * 
  * @author ragerri
  * @version 2014/07/29
  * 
  */
-public class ClarkCluster implements SerializableArtifact {
+public class Word2VecCluster implements SerializableArtifact {
 
   private static final Pattern spacePattern = Pattern.compile(" ");
-  /**
-   * Turkish capital letter I with dot.
-   */
-  public static final Pattern dotInsideI = Pattern.compile("\u0130", Pattern.UNICODE_CHARACTER_CLASS);
   
-  public static class ClarkClusterSerializer implements ArtifactSerializer<ClarkCluster> {
+  public static class Word2VecClusterSerializer implements ArtifactSerializer<Word2VecCluster> {
 
-    public ClarkCluster create(InputStream in) throws IOException,
+    public Word2VecCluster create(InputStream in) throws IOException,
         InvalidFormatException {
-      return new ClarkCluster(in);
+      return new Word2VecCluster(in);
     }
 
-    public void serialize(ClarkCluster artifact, OutputStream out)
+    public void serialize(Word2VecCluster artifact, OutputStream out)
         throws IOException {
       artifact.serialize(out);
     }
   }
   
   private Map<String, String> tokenToClusterMap = new HashMap<String, String>();
-
-  public ClarkCluster(InputStream in) throws IOException {
+  
+  public Word2VecCluster(InputStream in) throws IOException {
 
     BufferedReader breader = new BufferedReader(new InputStreamReader(in, Charset.forName("UTF-8")));
     String line;
     while ((line = breader.readLine()) != null) {
       String[] lineArray = spacePattern.split(line);
-      if (lineArray.length == 3) {
-        String normalizedToken = dotInsideI.matcher(lineArray[0]).replaceAll("i");
-        tokenToClusterMap.put(normalizedToken.toLowerCase(), lineArray[1].intern());
-      }
-      else if (lineArray.length == 2) {
-        String normalizedToken = dotInsideI.matcher(lineArray[0]).replaceAll("i");
+      if (lineArray.length == 2) {
+        String normalizedToken = ClarkCluster.dotInsideI.matcher(lineArray[0]).replaceAll("i");
         tokenToClusterMap.put(normalizedToken.toLowerCase(), lineArray[1].intern());
       }
     }
   }
-
+  
   public String lookupToken(String string) {
     return tokenToClusterMap.get(string);
   }
@@ -105,7 +98,8 @@ public class ClarkCluster implements SerializableArtifact {
   }
 
   public Class<?> getArtifactSerializerClass() {
-    return ClarkClusterSerializer.class;
+    return Word2VecClusterSerializer.class;
   }
+
 }
 

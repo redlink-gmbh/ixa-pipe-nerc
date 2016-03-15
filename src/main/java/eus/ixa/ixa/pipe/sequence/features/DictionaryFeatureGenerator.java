@@ -10,7 +10,7 @@ import opennlp.tools.util.featuregen.ArtifactToSerializerMapper;
 import opennlp.tools.util.featuregen.CustomFeatureGenerator;
 import opennlp.tools.util.featuregen.FeatureGeneratorResourceProvider;
 import opennlp.tools.util.model.ArtifactSerializer;
-import eus.ixa.ixa.pipe.sequence.dict.Dictionary;
+import eus.ixa.ixa.pipe.sequence.resources.Dictionary;
 import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 /**
