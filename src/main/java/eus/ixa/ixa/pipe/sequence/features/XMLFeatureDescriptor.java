@@ -307,6 +307,19 @@ public final class XMLFeatureDescriptor {
       System.err.println("-> Word2Vec Clusters Features added!");
     }
     //Morphological features
+    if (Flags.isPOSTagFeatures(params)) {
+      setWindow(params);
+      String morphoPath = Flags.getPOSTagFeatures(params);
+      Element morphoClassFeatureElement = new Element("custom");
+      morphoClassFeatureElement.setAttribute("class", POSTagFeatureGenerator.class.getName());
+      morphoClassFeatureElement.setAttribute("model", InputOutputUtils.normalizeLexiconName(new File(morphoPath).getName()));
+      Element morphoClassFeatureWindow = new Element("window");
+      morphoClassFeatureWindow.setAttribute("prevLength", Integer.toString(leftWindow));
+      morphoClassFeatureWindow.setAttribute("nextLength", Integer.toString(rightWindow));
+      morphoClassFeatureWindow.addContent(morphoClassFeatureElement);
+      generators.addContent(morphoClassFeatureWindow);
+      System.err.println("-> POSTagging Features added!");
+    }
     if (Flags.isMorphoFeatures(params)) {
       setWindow(params);
       String morphoPath = Flags.getMorphoFeatures(params);

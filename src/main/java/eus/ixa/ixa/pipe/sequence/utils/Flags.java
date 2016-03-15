@@ -355,6 +355,16 @@ public class Flags {
     }
     return brownFlag;
   }
+  
+  public static String getPOSTagFeatures(TrainingParameters params) {
+    String morphoFlag = null;
+    if (params.getSettings().get("POSTagFeatures") != null) {
+      morphoFlag = params.getSettings().get("POSTagFeatures");
+    } else {
+      morphoFlag = Flags.DEFAULT_FEATURE_FLAG;
+    }
+    return morphoFlag;
+  }
 
   public static String getMorphoFeatures(TrainingParameters params) {
     String morphoFlag = null;
@@ -544,6 +554,12 @@ public class Flags {
         .println("You need to specify the DictionaryFeatures in the parameters file to use the DictionaryPath!");
     System.exit(1);
   }
+  
+  public static boolean isPOSTagFeatures(TrainingParameters params) {
+    String morphoFeatures = getMorphoFeatures(params);
+    return !morphoFeatures.equalsIgnoreCase(Flags.DEFAULT_FEATURE_FLAG);
+  }
+  
 
   /**
    * Check if morphological features are active.

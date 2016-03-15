@@ -38,6 +38,7 @@ import eus.ixa.ixa.pipe.sequence.resources.Dictionary;
 import eus.ixa.ixa.pipe.sequence.resources.LemmaResource;
 import eus.ixa.ixa.pipe.sequence.resources.MFSResource;
 import eus.ixa.ixa.pipe.sequence.resources.POSModelResource;
+import eus.ixa.ixa.pipe.sequence.resources.SequenceModelResource;
 import eus.ixa.ixa.pipe.sequence.resources.Word2VecCluster;
 import eus.ixa.ixa.pipe.sequence.utils.Flags;
 import eus.ixa.ixa.pipe.sequence.utils.InputOutputUtils;
@@ -162,6 +163,12 @@ public class DefaultTrainer extends AbstractTrainer {
         artifactSerializers.put(serializerId, new Dictionary.DictionarySerializer());
         loadResource(serializerId, artifactSerializers, dictionaryPath, featureGenDescriptor, resources);
       }
+    }
+    if (Flags.isPOSTagFeatures(params)) {
+      String morphoResourcesPath = Flags.getPOSTagFeatures(params);
+      String posSerializerId = "postagserializer";
+      artifactSerializers.put(posSerializerId, new SequenceModelResource.SequenceModelResourceSerializer());
+      loadResource(posSerializerId, artifactSerializers, morphoResourcesPath, featureGenDescriptor, resources);
     }
     if (Flags.isMorphoFeatures(params)) {
       String morphoResourcesPath = Flags.getMorphoFeatures(params);
