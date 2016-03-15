@@ -560,7 +560,6 @@ public class Flags {
     return !morphoFeatures.equalsIgnoreCase(Flags.DEFAULT_FEATURE_FLAG);
   }
   
-
   /**
    * Check if morphological features are active.
    * @param params the parameters

@@ -23,6 +23,7 @@ public class POSTagFeatureGenerator extends CustomFeatureGenerator implements Ar
   private SequenceModelResource posModelResource;
   private String[] currentSentence;
   private Span[] currentTags;
+  
   public POSTagFeatureGenerator() {
   }
   
@@ -54,7 +55,7 @@ public class POSTagFeatureGenerator extends CustomFeatureGenerator implements Ar
       throws InvalidFormatException {
     Object posResource = resourceProvider.getResource(properties.get("model"));
     if (!(posResource instanceof SequenceModelResource)) {
-      throw new InvalidFormatException("Not a POSModelResource for key: " + properties.get("model"));
+      throw new InvalidFormatException("Not a SequenceModelResource for key: " + properties.get("model"));
     }
     this.posModelResource = (SequenceModelResource) posResource;
   }
