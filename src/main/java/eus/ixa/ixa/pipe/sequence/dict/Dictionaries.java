@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 import com.google.common.base.Charsets;
 import com.google.common.io.Files;
 
-import eus.ixa.ixa.pipe.sequence.StringUtils;
+import eus.ixa.ixa.pipe.sequence.utils.StringUtils;
 
 /**
  * 

@@ -38,7 +38,6 @@ import net.sourceforge.argparse4j.inf.Namespace;
 import net.sourceforge.argparse4j.inf.Subparser;
 import net.sourceforge.argparse4j.inf.Subparsers;
 import opennlp.tools.cmdline.CmdLineUtil;
-import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.util.TrainingParameters;
 
 import org.jdom2.JDOMException;
@@ -50,11 +49,11 @@ import eus.ixa.ixa.pipe.sequence.eval.Evaluate;
 import eus.ixa.ixa.pipe.sequence.nerc.Annotate;
 import eus.ixa.ixa.pipe.sequence.nerc.NameFinderServer;
 import eus.ixa.ixa.pipe.sequence.nerc.train.DefaultTrainer;
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
-import eus.ixa.ixa.pipe.sequence.nerc.train.InputOutputUtils;
 import eus.ixa.ixa.pipe.sequence.nerc.train.Trainer;
 import eus.ixa.ixa.pipe.sequence.ote.OpinionTargetExtractor;
 import eus.ixa.ixa.pipe.sequence.ote.TargetExtractorServer;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.InputOutputUtils;
 
 /**
  * Main class of ixa-pipe-nerc, the ixa pipes (ixa2.si.ehu.es/ixa-pipes) sequence
@@ -332,7 +331,7 @@ public class CLI {
       outModel = Flags.getModel(params);
     }
     Trainer nercTrainer = new DefaultTrainer(params);
-    TokenNameFinderModel trainedModel = nercTrainer.train(params);
+    SequenceLabelerModel trainedModel = nercTrainer.train(params);
     CmdLineUtil.writeModel("ixa-pipe-nerc", new File(outModel), trainedModel);
   }
 
@@ -567,7 +566,7 @@ public class CLI {
         .help("Choose level of detail of evaluation report; it defaults to detailed evaluation.\n");
     evalParser.addArgument("--types")
         .required(false)
-        .setDefault(Flags.DEFAULT_NE_TYPES)
+        .setDefault(Flags.DEFAULT_SEQUENCE_TYPES)
         .help("Choose which Sequence types used for evaluation; the argument must be a comma separated" +
         		" string; e.g., 'person,organization'.\n");
             

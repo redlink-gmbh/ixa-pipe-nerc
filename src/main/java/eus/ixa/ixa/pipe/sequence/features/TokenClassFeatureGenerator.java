@@ -18,7 +18,7 @@ package eus.ixa.ixa.pipe.sequence.features;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 import opennlp.tools.util.featuregen.FeatureGeneratorAdapter;
 import opennlp.tools.util.featuregen.StringPattern;

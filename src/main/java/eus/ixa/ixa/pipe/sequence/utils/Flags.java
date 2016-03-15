@@ -13,7 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package eus.ixa.ixa.pipe.sequence.nerc.train;
+package eus.ixa.ixa.pipe.sequence.utils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class Flags {
   public static final int DEFAULT_BEAM_SIZE = 3;
   public static final int DEFAULT_FOLDS_VALUE = 10;
   public static final String DEFAULT_EVALUATE_MODEL = "off";
-  public static final String DEFAULT_NE_TYPES = "off";
+  public static final String DEFAULT_SEQUENCE_TYPES = "off";
   public static final String DEFAULT_LEXER = "off";
   public static final String DEFAULT_DICT_OPTION = "off";
   public static final String DEFAULT_DICT_PATH = "off";

@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.sequence.nerc.train;
+package eus.ixa.ixa.pipe.sequence.utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;

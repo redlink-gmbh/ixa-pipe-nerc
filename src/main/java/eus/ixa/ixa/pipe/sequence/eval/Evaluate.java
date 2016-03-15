@@ -22,27 +22,22 @@ import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import opennlp.tools.cmdline.namefind.NameEvaluationErrorListener;
-import opennlp.tools.cmdline.namefind.TokenNameFinderDetailedFMeasureListener;
-import opennlp.tools.namefind.NameFinderME;
-import opennlp.tools.namefind.NameSample;
-import opennlp.tools.namefind.NameSampleTypeFilter;
-import opennlp.tools.namefind.TokenNameFinderEvaluationMonitor;
-import opennlp.tools.namefind.TokenNameFinderEvaluator;
-import opennlp.tools.namefind.TokenNameFinderModel;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.eval.EvaluationMonitor;
+import eus.ixa.ixa.pipe.sequence.SequenceEvaluationErrorListener;
 import eus.ixa.ixa.pipe.sequence.SequenceLabeler;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerDetailedFMeasureListener;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerEvaluationMonitor;
 import eus.ixa.ixa.pipe.sequence.SequenceLabelerEvaluator;
 import eus.ixa.ixa.pipe.sequence.SequenceLabelerME;
 import eus.ixa.ixa.pipe.sequence.SequenceLabelerModel;
 import eus.ixa.ixa.pipe.sequence.SequenceSample;
 import eus.ixa.ixa.pipe.sequence.SequenceSampleTypeFilter;
 import eus.ixa.ixa.pipe.sequence.nerc.train.AbstractTrainer;
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 /**
- * Evaluation class mostly using {@link TokenNameFinderEvaluator}.
+ * Evaluation class mostly using {@link SequenceLabelerEvaluator}.
  *
  * @author ragerri
  * @version 2015-02-24
@@ -54,14 +49,14 @@ public class Evaluate {
    */
   private ObjectStream<SequenceSample> testSamples;
   /**
-   * An instance of the probabilistic {@link NameFinderME}.
+   * An instance of the probabilistic {@link SequenceLabelerME}.
    */
-  private SequenceLabeler nameFinder;
+  private SequenceLabeler sequenceLabeler;
   /**
    * The models to use for every language. The keys of the hash are the
    * language codes, the values the models.
    */
-  private static ConcurrentHashMap<String, SequenceLabelerModel> nercModels =
+  private static ConcurrentHashMap<String, SequenceLabelerModel> seqModels =
       new ConcurrentHashMap<String, SequenceLabelerModel>();
  
   /**
@@ -79,15 +74,15 @@ public class Evaluate {
     String model = props.getProperty("model");
     String testSet = props.getProperty("testset");
     String corpusFormat = props.getProperty("corpusFormat");
-    String netypes = props.getProperty("types");
+    String seqTypes = props.getProperty("types");
     
     testSamples = AbstractTrainer.getNameStream(testSet, clearFeatures, corpusFormat);
-    if (netypes != Flags.DEFAULT_NE_TYPES) {
-      String[] neTypes = netypes.split(",");
+    if (seqTypes != Flags.DEFAULT_SEQUENCE_TYPES) {
+      String[] neTypes = seqTypes.split(",");
       testSamples = new SequenceSampleTypeFilter(neTypes, testSamples);
     }
-    nercModels.putIfAbsent(lang, new SequenceLabelerModel(new FileInputStream(model)));
-    nameFinder = new SequenceLabelerME(nercModels.get(lang));
+    seqModels.putIfAbsent(lang, new SequenceLabelerModel(new FileInputStream(model)));
+    sequenceLabeler = new SequenceLabelerME(seqModels.get(lang));
   }
 
   /**
@@ -95,24 +90,24 @@ public class Evaluate {
    * @throws IOException if test corpus not loaded
    */
   public final void evaluate() throws IOException {
-    SequenceLabelerEvaluator evaluator = new SequenceLabelerEvaluator(nameFinder);
+    SequenceLabelerEvaluator evaluator = new SequenceLabelerEvaluator(sequenceLabeler);
     evaluator.evaluate(testSamples);
     System.out.println(evaluator.getFMeasure());
-    //TODO split F-measure and wordAccuracy?
-    System.out.println(evaluator.getWordAccuracy());
+    //TODO split F-measure and wordAccuracy
+    //System.out.println(evaluator.getWordAccuracy());
   }
   /**
    * Evaluate and print the precision, recall and F measure per
-   * named entity class.
+   * sequence class.
    *
    * @throws IOException if test corpus not loaded
    */
   public final void detailEvaluate() throws IOException {
     List<EvaluationMonitor<SequenceSample>> listeners = new LinkedList<EvaluationMonitor<SequenceSample>>();
-    TokenNameFinderDetailedFMeasureListener detailedFListener = new TokenNameFinderDetailedFMeasureListener();
+    SequenceLabelerDetailedFMeasureListener detailedFListener = new SequenceLabelerDetailedFMeasureListener();
     listeners.add(detailedFListener);
-    TokenNameFinderEvaluator evaluator = new TokenNameFinderEvaluator(nameFinder,
-        listeners.toArray(new TokenNameFinderEvaluationMonitor[listeners.size()]));
+    SequenceLabelerEvaluator evaluator = new SequenceLabelerEvaluator(sequenceLabeler,
+        listeners.toArray(new SequenceLabelerEvaluationMonitor[listeners.size()]));
     evaluator.evaluate(testSamples);
     System.out.println(detailedFListener.toString());
   }
@@ -121,10 +116,10 @@ public class Evaluate {
    * @throws IOException if test corpus not loaded
    */
   public final void evalError() throws IOException {
-    List<EvaluationMonitor<NameSample>> listeners = new LinkedList<EvaluationMonitor<NameSample>>();
-    listeners.add(new NameEvaluationErrorListener());
-    TokenNameFinderEvaluator evaluator = new TokenNameFinderEvaluator(nameFinder,
-        listeners.toArray(new TokenNameFinderEvaluationMonitor[listeners.size()]));
+    List<EvaluationMonitor<SequenceSample>> listeners = new LinkedList<EvaluationMonitor<SequenceSample>>();
+    listeners.add(new SequenceEvaluationErrorListener());
+    SequenceLabelerEvaluator evaluator = new SequenceLabelerEvaluator(sequenceLabeler,
+        listeners.toArray(new SequenceLabelerEvaluationMonitor[listeners.size()]));
     evaluator.evaluate(testSamples);
     System.out.println(evaluator.getFMeasure());
   }

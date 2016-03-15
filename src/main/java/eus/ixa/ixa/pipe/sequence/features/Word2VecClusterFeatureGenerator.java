@@ -27,7 +27,7 @@ import opennlp.tools.util.featuregen.CustomFeatureGenerator;
 import opennlp.tools.util.featuregen.FeatureGeneratorResourceProvider;
 import opennlp.tools.util.model.ArtifactSerializer;
 import eus.ixa.ixa.pipe.sequence.dict.Word2VecCluster;
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 public class Word2VecClusterFeatureGenerator extends CustomFeatureGenerator implements ArtifactToSerializerMapper {
   

@@ -31,7 +31,6 @@ import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.model.ArtifactSerializer;
 import eus.ixa.ixa.pipe.sequence.SequenceLabelerFactory;
 import eus.ixa.ixa.pipe.sequence.SequenceLabelerModel;
-import eus.ixa.ixa.pipe.sequence.StringUtils;
 import eus.ixa.ixa.pipe.sequence.dict.BrownCluster;
 import eus.ixa.ixa.pipe.sequence.dict.ClarkCluster;
 import eus.ixa.ixa.pipe.sequence.dict.Dictionary;
@@ -40,6 +39,9 @@ import eus.ixa.ixa.pipe.sequence.dict.MFSResource;
 import eus.ixa.ixa.pipe.sequence.dict.POSModelResource;
 import eus.ixa.ixa.pipe.sequence.dict.Word2VecCluster;
 import eus.ixa.ixa.pipe.sequence.features.XMLFeatureDescriptor;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.InputOutputUtils;
+import eus.ixa.ixa.pipe.sequence.utils.StringUtils;
 
 /**
  * Training sequence labeler based on Apache OpenNLP Machine Learning API. This class creates

@@ -17,7 +17,7 @@ package eus.ixa.ixa.pipe.sequence.features;
 
 import java.util.List;
 
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 import opennlp.tools.util.featuregen.FeatureGeneratorAdapter;
 

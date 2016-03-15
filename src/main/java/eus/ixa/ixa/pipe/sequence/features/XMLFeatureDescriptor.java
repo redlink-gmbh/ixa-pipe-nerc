@@ -27,9 +27,9 @@ import org.jdom2.Element;
 import org.jdom2.output.Format;
 import org.jdom2.output.XMLOutputter;
 
-import eus.ixa.ixa.pipe.sequence.StringUtils;
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
-import eus.ixa.ixa.pipe.sequence.nerc.train.InputOutputUtils;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.InputOutputUtils;
+import eus.ixa.ixa.pipe.sequence.utils.StringUtils;
 
 /**
  * Class to automatically generate the feature descriptor from a trainParams.properties file.

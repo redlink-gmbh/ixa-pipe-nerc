@@ -23,8 +23,8 @@ import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.util.Span;
 import eus.ixa.ixa.pipe.sequence.Sequence;
 import eus.ixa.ixa.pipe.sequence.SequenceFactory;
-import eus.ixa.ixa.pipe.sequence.StringUtils;
 import eus.ixa.ixa.pipe.sequence.nerc.lexer.NumericNameLexer;
+import eus.ixa.ixa.pipe.sequence.utils.StringUtils;
 
 public class NumericNameFinder {
   

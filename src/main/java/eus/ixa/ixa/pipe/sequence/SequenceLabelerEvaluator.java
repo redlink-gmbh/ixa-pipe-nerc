@@ -27,8 +27,8 @@ import opennlp.tools.util.eval.Mean;
  * reference {@link SequenceSample}s.
  *
  * @see Evaluator
- * @see TokenNameFinder
- * @see NameSample
+ * @see SequenceLabeler
+ * @see SequenceSample
  */
 public class SequenceLabelerEvaluator extends Evaluator<SequenceSample> {
 
@@ -57,9 +57,9 @@ public class SequenceLabelerEvaluator extends Evaluator<SequenceSample> {
   /**
    * Evaluates the given reference {@link SequenceSample} object.
    *
-   * This is done by finding the names with the
+   * This is done by finding the sequneces with the
    * {@link SequenceLabeler} in the sentence from the reference
-   * {@link SequenceSample}. The found names are then used to
+   * {@link SequenceSample}. The found sequences are then used to
    * calculate and update the scores.
    *
    * @param reference the reference {@link SequenceSample}.
@@ -75,7 +75,7 @@ public class SequenceLabelerEvaluator extends Evaluator<SequenceSample> {
 
     Span[] predictedNames = sequenceLabeler.find(reference.getTokens());
     Span[] references = reference.getSequences();
-    String[] predictedTags = StringUtils.getTagsFromSpan(predictedNames, reference.getTokens());
+    /*String[] predictedTags = StringUtils.getTagsFromSpan(predictedNames, reference.getTokens());
     String[] referenceTags = StringUtils.getTagsFromSpan(references, reference.getTokens());
     //TODO split word accuracy and F-measure depending on the task?
     for (int i = 0; i < referenceTags.length; i++) {
@@ -85,7 +85,7 @@ public class SequenceLabelerEvaluator extends Evaluator<SequenceSample> {
       else {
         wordAccuracy.add(0);
       }
-    }
+    }*/
     // OPENNLP-396 When evaluating with a file in the old format
     // the type of the span is null, but must be set to default to match
     // the output of the name finder.

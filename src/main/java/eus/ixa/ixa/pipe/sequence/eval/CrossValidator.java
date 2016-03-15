@@ -22,23 +22,23 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import opennlp.tools.cmdline.namefind.NameEvaluationErrorListener;
-import opennlp.tools.cmdline.namefind.TokenNameFinderDetailedFMeasureListener;
-import opennlp.tools.namefind.BilouCodec;
-import opennlp.tools.namefind.BioCodec;
-import opennlp.tools.namefind.NameSample;
-import opennlp.tools.namefind.NameSampleTypeFilter;
-import opennlp.tools.namefind.TokenNameFinderCrossValidator;
-import opennlp.tools.namefind.TokenNameFinderEvaluationMonitor;
-import opennlp.tools.namefind.TokenNameFinderFactory;
 import opennlp.tools.util.ObjectStream;
 import opennlp.tools.util.SequenceCodec;
 import opennlp.tools.util.TrainingParameters;
 import opennlp.tools.util.eval.EvaluationMonitor;
+import eus.ixa.ixa.pipe.sequence.BilouCodec;
+import eus.ixa.ixa.pipe.sequence.BioCodec;
+import eus.ixa.ixa.pipe.sequence.SequenceEvaluationErrorListener;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerCrossValidator;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerDetailedFMeasureListener;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerEvaluationMonitor;
+import eus.ixa.ixa.pipe.sequence.SequenceLabelerFactory;
+import eus.ixa.ixa.pipe.sequence.SequenceSample;
+import eus.ixa.ixa.pipe.sequence.SequenceSampleTypeFilter;
 import eus.ixa.ixa.pipe.sequence.features.XMLFeatureDescriptor;
 import eus.ixa.ixa.pipe.sequence.nerc.train.AbstractTrainer;
 import eus.ixa.ixa.pipe.sequence.nerc.train.DefaultTrainer;
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 /**
  * Abstract class for common training functionalities. Every other trainer class
@@ -59,7 +59,7 @@ public class CrossValidator {
   /**
    * ObjectStream of the training data.
    */
-  private ObjectStream<NameSample> trainSamples;
+  private ObjectStream<SequenceSample> trainSamples;
   /**
    * beamsize value needs to be established in any class extending this one.
    */
@@ -73,18 +73,18 @@ public class CrossValidator {
    */
   private SequenceCodec<String> sequenceCodec;
   /**
-   * The corpus format: conll02, conll03 and opennlp.
+   * The corpus format: conll02, conll03.
    */
   private String corpusFormat;
   /**
    * features needs to be implemented by any class extending this one.
    */
-  private TokenNameFinderFactory nameClassifierFactory;
+  private SequenceLabelerFactory nameClassifierFactory;
   /**
    * The evaluation listeners.
    */
-  private List<EvaluationMonitor<NameSample>> listeners = new LinkedList<EvaluationMonitor<NameSample>>();
-  TokenNameFinderDetailedFMeasureListener detailedFListener;
+  private List<EvaluationMonitor<SequenceSample>> listeners = new LinkedList<EvaluationMonitor<SequenceSample>>();
+  SequenceLabelerDetailedFMeasureListener detailedFListener;
 
   
   public CrossValidator(final TrainingParameters params) throws IOException {
@@ -96,11 +96,11 @@ public class CrossValidator {
     trainSamples = AbstractTrainer.getNameStream(trainData, clearFeatures, corpusFormat);
     this.beamSize = Flags.getBeamsize(params);
     this.folds = Flags.getFolds(params);
-    this.sequenceCodec =  TokenNameFinderFactory.instantiateSequenceCodec(getSequenceCodec(Flags.getSequenceCodec(params)));
+    this.sequenceCodec =  SequenceLabelerFactory.instantiateSequenceCodec(getSequenceCodec(Flags.getSequenceCodec(params)));
     if (params.getSettings().get("Types") != null) {
       String netypes = params.getSettings().get("Types");
       String[] neTypes = netypes.split(",");
-      trainSamples = new NameSampleTypeFilter(neTypes, trainSamples);
+      trainSamples = new SequenceSampleTypeFilter(neTypes, trainSamples);
     }
     createNameFactory(params);
     getEvalListeners(params);
@@ -113,17 +113,17 @@ public class CrossValidator {
     byte[] featureGeneratorBytes = featureDescription.getBytes(Charset
         .forName("UTF-8"));
     Map<String, Object> resources = DefaultTrainer.loadResources(params, featureGeneratorBytes);
-    this.nameClassifierFactory = TokenNameFinderFactory.create(
-        TokenNameFinderFactory.class.getName(), featureGeneratorBytes,
+    this.nameClassifierFactory = SequenceLabelerFactory.create(
+        SequenceLabelerFactory.class.getName(), featureGeneratorBytes,
         resources, sequenceCodec);
   }
   
   private void getEvalListeners(TrainingParameters params) {
     if (params.getSettings().get("EvaluationType").equalsIgnoreCase("error")) {
-      listeners.add(new NameEvaluationErrorListener());
+      listeners.add(new SequenceEvaluationErrorListener());
     }
     if (params.getSettings().get("EvaluationType").equalsIgnoreCase("detailed")) {
-      detailedFListener = new TokenNameFinderDetailedFMeasureListener();
+      detailedFListener = new SequenceLabelerDetailedFMeasureListener();
       listeners.add(detailedFListener);
     }
   }
@@ -133,11 +133,11 @@ public class CrossValidator {
       throw new IllegalStateException(
           "Classes derived from AbstractNameFinderTrainer must create and fill the AdaptiveFeatureGenerator features!");
     }
-    TokenNameFinderCrossValidator validator = null;
+    SequenceLabelerCrossValidator validator = null;
     try {
-      validator = new TokenNameFinderCrossValidator(lang,
+      validator = new SequenceLabelerCrossValidator(lang,
           null, params, nameClassifierFactory,
-          listeners.toArray(new TokenNameFinderEvaluationMonitor[listeners.size()]));
+          listeners.toArray(new SequenceLabelerEvaluationMonitor[listeners.size()]));
       validator.evaluate(trainSamples, folds);
     } catch (IOException e) {
       System.err.println("IO error while loading training set!");

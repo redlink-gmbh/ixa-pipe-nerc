@@ -14,7 +14,7 @@
    limitations under the License.
  */
 
-package eus.ixa.ixa.pipe.sequence;
+package eus.ixa.ixa.pipe.sequence.utils;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -30,6 +30,8 @@ import eus.ixa.ixa.pipe.sequence.SequenceSample;
 import eus.ixa.ixa.pipe.sequence.SequenceSampleTypeFilter;
 import eus.ixa.ixa.pipe.sequence.formats.CoNLL02Format;
 import eus.ixa.ixa.pipe.sequence.formats.CoNLL03Format;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.InputOutputUtils;
 
 /**
  * Abstract class for common training functionalities. Every other trainer class

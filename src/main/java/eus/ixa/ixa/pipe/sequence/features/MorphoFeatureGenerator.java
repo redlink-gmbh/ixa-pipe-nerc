@@ -28,7 +28,7 @@ import opennlp.tools.util.featuregen.FeatureGeneratorResourceProvider;
 import opennlp.tools.util.model.ArtifactSerializer;
 import eus.ixa.ixa.pipe.sequence.dict.LemmaResource;
 import eus.ixa.ixa.pipe.sequence.dict.POSModelResource;
-import eus.ixa.ixa.pipe.sequence.nerc.train.Flags;
+import eus.ixa.ixa.pipe.sequence.utils.Flags;
 
 /**
  * Generate pos tag, pos tag class or lemma as feature of current token.
