@@ -11,12 +11,9 @@ import java.util.Properties;
 import opennlp.tools.ml.BeamSearch;
 import opennlp.tools.ml.model.MaxentModel;
 import opennlp.tools.ml.model.SequenceClassificationModel;
-import opennlp.tools.namefind.NameFinderME;
 import opennlp.tools.util.BaseToolFactory;
 import opennlp.tools.util.InvalidFormatException;
 import opennlp.tools.util.SequenceCodec;
-import opennlp.tools.util.featuregen.BrownCluster;
-import opennlp.tools.util.featuregen.WordClusterDictionary;
 import opennlp.tools.util.model.ArtifactSerializer;
 import opennlp.tools.util.model.BaseModel;
 import opennlp.tools.util.model.ModelUtil;
@@ -25,7 +22,7 @@ import opennlp.tools.util.model.ModelUtil;
  * The {@link SequenceLabelerModel} is the model used
  * by a learnable {@link SequenceLabeler}.
  *
- * @see NameFinderME
+ * @see SequenceLabelerME
  */
 // TODO: Fix the model validation, on loading via constructors and input streams
 public class SequenceLabelerModel extends BaseModel {
@@ -165,11 +162,7 @@ public class SequenceLabelerModel extends BaseModel {
   public SequenceLabelerFactory getFactory() {
     return (SequenceLabelerFactory) this.toolFactory;
   }
-
-  // TODO: This should be moved to the NameFinderFactory ... !!!
-  // Lets deprecate it!
-
-
+  
   @Override
   protected void createArtifactSerializers(Map<String, ArtifactSerializer> serializers) {
     super.createArtifactSerializers(serializers);
@@ -178,31 +171,13 @@ public class SequenceLabelerModel extends BaseModel {
   }
 
   /**
-   * Create the artifact serializers. Currently for serializers related to
-   * features that require external resources, such as {@code W2VClassesDictionary}
-   * objects, the convention is to add its element tag name as key of the serializer map.
-   * For example, the element tag name for the {@code WordClusterFeatureGenerator} which
-   * uses {@code W2VClassesDictionary} objects serialized by the {@code W2VClassesDictionarySerializer}
-   * is 'wordcluster', which is the key used to add the serializer to the map.
+   * Create the artifact serializers. The DefaultTrainer deals with any other Custom serializers.
    * @return the map containing the added serializers
    */
   public static Map<String, ArtifactSerializer> createArtifactSerializers()  {
-
-    // TODO: Not so nice, because code cannot really be reused by the other create serializer method
-    //       Has to be redesigned, we need static access to default serializers
-    //       and these should be able to extend during runtime ?!
-    //
-    //       The XML feature generator factory should provide these mappings.
-    //       Usually the feature generators should know what type of resource they expect.
-
     Map<String, ArtifactSerializer> serializers = BaseModel.createArtifactSerializers();
 
     serializers.put("featuregen", new ByteArraySerializer());
-    serializers.put("wordcluster", new WordClusterDictionary.WordClusterDictionarySerializer());
-    serializers.put("brownclustertoken", new BrownCluster.BrownClusterSerializer());
-    serializers.put("brownclustertokenclass", new BrownCluster.BrownClusterSerializer());
-    serializers.put("brownclusterbigram", new BrownCluster.BrownClusterSerializer());
-
     return serializers;
   }
 
