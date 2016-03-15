@@ -556,7 +556,7 @@ public class Flags {
   }
   
   public static boolean isPOSTagFeatures(TrainingParameters params) {
-    String morphoFeatures = getMorphoFeatures(params);
+    String morphoFeatures = getPOSTagFeatures(params);
     return !morphoFeatures.equalsIgnoreCase(Flags.DEFAULT_FEATURE_FLAG);
   }
   
