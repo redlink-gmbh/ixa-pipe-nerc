@@ -31,6 +31,7 @@ public class SequenceLabelerEventStream extends opennlp.tools.util.AbstractEvent
    * @param dataStream The data stream of events.
    * @param type null or overrides the type parameter in the provided samples
    * @param contextGenerator The context generator used to generate features for the event stream.
+   * @param codec the encoding
    */
   public SequenceLabelerEventStream(ObjectStream<SequenceSample> dataStream, String type, SequenceContextGenerator contextGenerator, SequenceCodec codec) {
     super(dataStream);

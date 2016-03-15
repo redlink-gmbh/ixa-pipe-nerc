@@ -33,8 +33,10 @@ public class DefaultSequenceContextGenerator implements SequenceContextGenerator
   
   /**
    * Creates a name context generator with the specified cache size.
-   */
-  public DefaultSequenceContextGenerator(AdaptiveFeatureGenerator... featureGenerators) {
+   *
+ * @param featureGenerators the array of feature generators
+ */
+public DefaultSequenceContextGenerator(AdaptiveFeatureGenerator... featureGenerators) {
 
     if (featureGenerators != null) {
       this.featureGenerators = featureGenerators;

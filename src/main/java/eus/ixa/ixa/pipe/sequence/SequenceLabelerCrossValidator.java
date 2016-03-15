@@ -126,23 +126,17 @@ public class SequenceLabelerCrossValidator {
 	  private FMeasure fmeasure = new FMeasure();
 	  private SequenceLabelerFactory factory;
 
-	  /**
-	   * Name finder cross validator
-	   *
-	   * @param languageCode
-	   *          the language of the training data
-	   * @param type
-	   *          null or an override type for all types in the training data
-	   * @param trainParams
-	   *          machine learning train parameters
-	   * @param featureGeneratorBytes
-	   *          descriptor to configure the feature generation or null
-	   * @param listeners
-	   *          a list of listeners
-	   * @param resources
-	   *          the resources for the name finder or null if none
-	   */
-	  public SequenceLabelerCrossValidator(String languageCode, String type,
+	  
+	  /** SequenceLabeler Cross Validator.
+	 * @param languageCode the language
+	 * @param type the class
+	 * @param trainParams the parameters files
+	 * @param featureGeneratorBytes the feature descriptor
+	 * @param resources the external resources
+	 * @param codec the encoding
+	 * @param listeners the listeners
+	 */
+	public SequenceLabelerCrossValidator(String languageCode, String type,
 	      TrainingParameters trainParams, byte[] featureGeneratorBytes,
 	      Map<String, Object> resources, SequenceCodec<String> codec,
 	      SequenceLabelerEvaluationMonitor... listeners) {
@@ -178,7 +172,7 @@ public class SequenceLabelerCrossValidator {
 	   *          the data to train and test
 	   * @param nFolds
 	   *          number of folds
-	   * @throws IOException
+	   * @throws IOException if io errors
 	   */
 	  public void evaluate(ObjectStream<SequenceSample> samples, int nFolds)
 	      throws IOException {

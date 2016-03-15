@@ -278,11 +278,11 @@ public class SequenceLabelerME implements SequenceLabeler {
    * Intersecting spans: The first span after sorting remains<br>
    * Contained spans: All spans which are contained by another are removed<br>
    *
-   * @param spans
+   * @param spans the spans
    *
    * @return non-overlapping spans
    */
-  public static Span[] dropOverlappingSpans(Span spans[]) {
+  public static Span[] dropOverlappingSpans(Span[] spans) {
 
     List<Span> sortedSpans = new ArrayList<Span>(spans.length);
     Collections.addAll(sortedSpans, spans);

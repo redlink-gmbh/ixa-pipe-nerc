@@ -61,8 +61,8 @@ public class SequenceSample {
    * Initializes the current instance.
    *
    * @param tokens training sentence
-   * @param sequences
-   * @param additionalContext
+   * @param sequences the sequences spans
+   * @param additionalContext any additional context
    * @param clearAdaptiveData if true the adaptive data of the
    *     feature generators is cleared
    */

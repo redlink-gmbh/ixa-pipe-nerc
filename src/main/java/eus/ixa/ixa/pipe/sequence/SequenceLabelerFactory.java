@@ -26,7 +26,7 @@ public class SequenceLabelerFactory extends BaseToolFactory {
   private SequenceCodec<String> seqCodec;
 
   /**
-   * Creates a {@link TokenNameFinderFactory} that provides the default implementation
+   * Creates a {@link SequenceLabelerFactory} that provides the default implementation
    * of the resources.
    */
   public SequenceLabelerFactory() {

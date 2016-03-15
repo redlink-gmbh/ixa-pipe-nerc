@@ -22,8 +22,10 @@ public class SequenceEvaluationErrorListener extends
 
   /**
    * Creates a listener that will print to a given {@link OutputStream}
-   */
-  public SequenceEvaluationErrorListener(OutputStream outputStream) {
+   *
+ * @param outputStream the outputstream
+ */
+public SequenceEvaluationErrorListener(OutputStream outputStream) {
     super(outputStream);
   }
 
