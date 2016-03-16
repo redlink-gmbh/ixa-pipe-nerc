@@ -91,13 +91,12 @@ public class TabulatedFormat implements ObjectStream<SequenceSample> {
         continue;
       }
       String fields[] = line.split("\t");
-      if (fields.length == 2) {
+      if (fields.length != 2) {
+        System.err.println("Skipping corrupt line: " + line);
+      }
+      else {
         tokens.add(fields[0]);
         seqTypes.add(fields[1]);
-      } else {
-        throw new IOException(
-            "Expected two fields per line in training data, got "
-                + fields.length + " for line '" + line + "'!");
       }
     }
     // check if we need to clear features every sentence
